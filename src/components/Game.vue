@@ -57,7 +57,6 @@ export default {
           }
         }
       }
-      console.log(map.length, y, map[y]);
       this.$set(map[map.length - 1 - y], x, room);
 
       if (!graph[room_id]) {
@@ -80,7 +79,6 @@ export default {
       }
     },
     handleKeys(event) {
-      console.log(event.key);
       switch (event.key) {
         case "Down": // IE/Edge specific value
         case "ArrowDown":

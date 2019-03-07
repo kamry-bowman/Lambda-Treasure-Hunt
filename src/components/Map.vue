@@ -2,7 +2,14 @@
   <div id="map">
     <div class="grid">
       <div class="row" v-for="(row, rowIndex) in view" :key="rowIndex">
-        <Cell v-for="(col, colIndex) in row" :key="colIndex" :col="col" :row="rowIndex"/>
+        <Cell
+          v-for="(col, colIndex) in row"
+          :key="col.mapPos"
+          :col="colIndex"
+          :row="rowIndex"
+          :cell="col"
+          :center="center"
+        />
       </div>
     </div>
     <!-- <div>{{ graph }}</div> -->
@@ -19,6 +26,9 @@ export default {
   name: "Map",
   components: {
     Cell
+  },
+  data() {
+    return { center: [Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2)] };
   },
   computed: {
     view: function() {
@@ -40,11 +50,21 @@ export default {
             const relPos = j - Math.floor(WIDTH / 2);
             const gridCol = x + relPos;
             const cellFromMap = map[gridRow][gridCol];
-            row[j] = cellFromMap || null;
+            row[j] = cellFromMap || {
+              mapPos: `${gridCol},${gridRow}`,
+              explored: false
+            };
           }
           grid.push(row);
         } else {
-          grid.push(Array.from({ length: WIDTH }).fill(null));
+          // create an empty row
+          const row = [];
+          for (let j = 0; j < WIDTH; j++) {
+            const relPos = j - Math.floor(WIDTH / 2);
+            const gridCol = x + relPos;
+            row[j] = { mapPos: `${gridCol},${gridRow}`, explored: false };
+          }
+          grid.push(row);
         }
       }
       return grid;

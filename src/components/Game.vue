@@ -32,8 +32,8 @@ export default {
   props: {
     msg: String
   },
-  mounted() {
-    return axios.get("/adv/init/").then(({ data }) => {
+  methods: {
+    updateGame(data) {
       const { coordinates, room_id, exits } = data;
       const { map, graph, player } = this;
       console.dir(data);
@@ -61,7 +61,53 @@ export default {
           edges: exits.reduce((acc, dir) => ({ ...acc, [dir]: "?" }), {})
         });
       }
-    });
+    },
+    async move(dir) {
+      try {
+        const { data } = await axios.post("/move/", { direction: dir });
+        this.updateGame(data);
+      } catch (err) {
+        console.dir(err);
+      }
+    },
+    handleKeys(event) {
+      console.log("hit");
+      switch (event.key) {
+        case "Down": // IE/Edge specific value
+        case "ArrowDown":
+          // Do something for "down arrow" key press.
+          break;
+        case "Up": // IE/Edge specific value
+        case "ArrowUp":
+          this.move("n");
+          break;
+        case "Left": // IE/Edge specific value
+        case "ArrowLeft":
+          // Do something for "left arrow" key press.
+          break;
+        case "Right": // IE/Edge specific value
+        case "ArrowRight":
+          // Do something for "right arrow" key press.
+          break;
+        case "Enter":
+          // Do something for "enter" or "return" key press.
+          break;
+        case "Esc": // IE/Edge specific value
+        case "Escape":
+          // Do something for "esc" key press.
+          break;
+        default:
+          return; // Quit when this doesn't handle the key event.
+      }
+
+      // Cancel the default action to avoid it being handled twice
+      event.preventDefault();
+    }
+  },
+  async mounted() {
+    const { data } = await axios.get("/adv/init/");
+    this.updateGame(data);
+    window.addEventListener("keydown", this.handleKeys);
   }
 };
 </script>

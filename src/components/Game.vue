@@ -2,7 +2,7 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <p>{{ info }}</p>
-    <Map v-bind:map="map" v-bind:graph="graph"/>
+    <Map :map="map" :graph="graph" :player="player"/>
   </div>
 </template>
 
@@ -24,7 +24,9 @@ export default {
       current: null,
       graph: {},
       info: null,
-      player: {}
+      player: {
+        pos: [0, 0]
+      }
     };
   },
   props: {
@@ -33,10 +35,11 @@ export default {
   mounted() {
     return axios.get("/adv/init/").then(({ data }) => {
       const { coordinates, room_id, exits } = data;
-      const { map, graph } = this;
+      const { map, graph, player } = this;
       console.dir(data);
       // update map
       const [x, y] = getCoords(coordinates);
+      player.pos = [x, y];
       const width = map[0] && map[0].length > x + 1 ? map[0].length : x + 1;
       const height = y + 1;
       while (map.length < height) {

@@ -75,7 +75,9 @@ export default {
         console.dir(data);
         this.updateGame(data);
       } catch (err) {
-        console.dir(err);
+        if (err.response.data && err.response.data.cooldown) {
+          this.next_move_time = Date.now() + err.response.data.cooldown * 1000;
+        }
       }
     },
     handleKeys(event) {

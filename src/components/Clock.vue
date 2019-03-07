@@ -16,7 +16,7 @@ export default {
   computed: {
     timeLeft: function() {
       // console.log("recomputing");
-      if (this.alarm <= this.currentTime) {
+      if (this.alarm <= this.currentTime - 1000) {
         return 0;
       } else {
         return ((this.alarm - this.currentTime) / 1000).toFixed(0);
@@ -33,7 +33,7 @@ export default {
     }
   },
   mounted() {
-    window.setInterval(this.updateTime, 1000);
+    window.setInterval(this.updateTime, 500);
   }
 };
 </script>

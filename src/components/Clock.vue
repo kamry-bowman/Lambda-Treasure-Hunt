@@ -7,11 +7,13 @@ export default {
   name: "Clock",
   data() {
     return {
-      currentTime: Date.now()
+      currentTime: Date.now(),
+      moved: false
     };
   },
   props: {
-    alarm: Number
+    alarm: Number,
+    autoMove: Function
   },
   computed: {
     timeLeft: function() {
@@ -28,7 +30,11 @@ export default {
       const currentTime = Date.now();
       // console.log(currentTime, this.alarm);
       if (currentTime <= this.alarm) {
+        this.moved = false;
         this.currentTime = currentTime;
+      } else if (!this.moved) {
+        this.autoMove();
+        this.moved = true;
       }
     }
   },

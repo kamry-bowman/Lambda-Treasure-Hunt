@@ -3,7 +3,7 @@
     <h1>{{ msg }}</h1>
     <p>{{ player.room }}</p>
     <Map :map="map" :graph="graph" :player="player"/>
-    <Clock :alarm="next_move_time"/>
+    <Clock :alarm="next_move_time" :autoMove="autoMove"/>
   </div>
 </template>
 
@@ -29,7 +29,9 @@ export default {
       player: {
         pos: [0, 0],
         room: null
-      }
+      },
+      autopilot: true,
+      next_move: null
     };
   },
   props: {
@@ -107,6 +109,14 @@ export default {
 
       // Cancel the default action to avoid it being handled twice
       event.preventDefault();
+    },
+    generateMove() {
+      return "n";
+    },
+    autoMove() {
+      // check if a next move is already, cached, if not, generate next move
+      const next_move = this.next_move || this.generateMove();
+      this.move(next_move);
     }
   },
   async mounted() {

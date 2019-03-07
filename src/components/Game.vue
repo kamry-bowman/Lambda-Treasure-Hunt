@@ -3,7 +3,7 @@
     <h1>{{ msg }}</h1>
     <p>{{ player.room }}</p>
     <Map :map="map" :graph="graph" :player="player"/>
-    <Clock :alarm="next_move_time" :autoMove="autoMove"/>
+    <Clock :alarm="nextMoveTime" :autoMove="autoMove" :initialized="initialized"/>
   </div>
 </template>
 
@@ -11,6 +11,7 @@
 import axios from "axios";
 import Map from "./Map.vue";
 import Clock from "./Clock.vue";
+import { getMoves } from "../utils";
 
 function getCoords(coords) {
   const [_, x, y] = coords.match(/\((\d*),(\d*)\)/);
@@ -22,16 +23,17 @@ export default {
   components: { Map, Clock },
   data() {
     return {
+      initialized: false,
       map: [[]],
       graph: {},
       info: null,
-      next_move_time: new Date(),
+      nextMoveTime: Date.now(),
       player: {
         pos: [0, 0],
         room: null
       },
       autopilot: true,
-      next_move: null
+      nextMoves: []
     };
   },
   props: {
@@ -42,7 +44,7 @@ export default {
       const { cooldown, ...room } = data;
       const { coordinates, room_id, exits } = room;
       const { map, graph, player } = this;
-      console.dir(data);
+      console.dir(room);
       // update map
       const [x, y] = getCoords(coordinates);
       player.pos = [x, y];
@@ -62,23 +64,24 @@ export default {
       this.$set(map[map.length - 1 - y], x, room);
 
       if (!graph[room_id]) {
-        this.$set(graph, room_id, {
-          room,
-          edges: exits.reduce((acc, dir) => ({ ...acc, [dir]: "?" }), {})
-        });
+        this.$set(
+          graph,
+          room_id,
+          exits.reduce((acc, dir) => ({ ...acc, [dir]: "?" }), {})
+        );
       }
 
       // update cooldown
-      this.next_move_time = Date.now() + cooldown * 1000;
+      this.nextMoveTime = Date.now() + cooldown * 1000;
     },
-    async move(dir) {
+    async move({ dir, room }) {
       try {
         const { data } = await axios.post("/move/", { direction: dir });
         console.dir(data);
         this.updateGame(data);
       } catch (err) {
         if (err.response.data && err.response.data.cooldown) {
-          this.next_move_time = Date.now() + err.response.data.cooldown * 1000;
+          this.nextMoveTime = Date.now() + err.response.data.cooldown * 1000;
         }
       }
     },
@@ -110,18 +113,25 @@ export default {
       // Cancel the default action to avoid it being handled twice
       event.preventDefault();
     },
-    generateMove() {
-      return "n";
-    },
     autoMove() {
       // check if a next move is already, cached, if not, generate next move
-      const next_move = this.next_move || this.generateMove();
-      this.move(next_move);
+      if (!this.nextMoves.length) {
+        const newMoves = getMoves(this.graph, this.player.room.room_id);
+        const nextMove = newMoves.pop();
+        this.move(nextMove);
+        this.nextMoves = [...this.nextMoves, ...newMoves];
+      } else {
+        const nextMove = this.nextMoves.pop();
+        if (nextMove) {
+          this.move(nextMove);
+        }
+      }
     }
   },
   async mounted() {
     const { data } = await axios.get("/adv/init/");
     this.updateGame(data);
+    this.initialized = true;
     window.addEventListener("keydown", this.handleKeys);
   }
 };

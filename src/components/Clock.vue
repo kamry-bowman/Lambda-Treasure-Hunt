@@ -13,7 +13,8 @@ export default {
   },
   props: {
     alarm: Number,
-    autoMove: Function
+    autoMove: Function,
+    initialized: Boolean
   },
   computed: {
     timeLeft: function() {
@@ -28,13 +29,15 @@ export default {
   methods: {
     updateTime: function() {
       const currentTime = Date.now();
-      // console.log(currentTime, this.alarm);
+      console.log(currentTime, this.alarm, this.initialized, this.moved);
       if (currentTime <= this.alarm) {
         this.moved = false;
         this.currentTime = currentTime;
       } else if (!this.moved) {
-        this.autoMove();
-        this.moved = true;
+        if (this.initialized) {
+          this.autoMove();
+          this.moved = true;
+        }
       }
     }
   },

@@ -1,7 +1,7 @@
 <template>
   <div id="map">
     <div class="grid">
-      <div class="row" v-for="(row, rowIndex) in map" :key="rowIndex">
+      <div class="row" v-for="(row, rowIndex) in view" :key="rowIndex">
         <Cell v-for="(col, colIndex) in row" :key="colIndex" :col="col" :row="rowIndex"/>
       </div>
     </div>
@@ -31,7 +31,7 @@ export default {
       for (let i = 0; i < HEIGHT; i++) {
         // convert player's vertical index relative to player to a grid height
         const relPos = i - Math.floor(HEIGHT / 2);
-        const gridRow = y - relPos;
+        const gridRow = y + relPos;
         // if this column is on grid, we need to grab any cells included in our map
         if (map[gridRow]) {
           // create a row, then grab any values we can from the map, otherwise set value to null
@@ -41,13 +41,10 @@ export default {
             const gridCol = x + relPos;
             const cellFromMap = map[gridRow][gridCol];
             row[j] = cellFromMap || null;
-            console.log(gridRow, gridCol, cellFromMap);
           }
-
-          grid[i] = row;
+          grid.push(row);
         } else {
-          console.log(gridRow, "empty");
-          grid[i] = Array.from({ length: WIDTH }).fill(null);
+          grid.push(Array.from({ length: WIDTH }).fill(null));
         }
       }
       return grid;

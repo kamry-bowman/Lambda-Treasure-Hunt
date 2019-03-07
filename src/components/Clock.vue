@@ -15,7 +15,7 @@ export default {
   },
   computed: {
     timeLeft: function() {
-      console.log("recomputing");
+      // console.log("recomputing");
       if (this.alarm <= this.currentTime) {
         return 0;
       } else {
@@ -26,7 +26,7 @@ export default {
   methods: {
     updateTime: function() {
       const currentTime = Date.now();
-      console.log(currentTime, this.alarm);
+      // console.log(currentTime, this.alarm);
       if (currentTime <= this.alarm) {
         this.currentTime = currentTime;
       }

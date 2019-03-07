@@ -1,12 +1,13 @@
 <template>
-  <div v-bind:class="{ occupied: data }"></div>
+  <div v-bind:class="{ occupied: col }"></div>
 </template>
 
 <script>
 export default {
   name: "Cell",
   props: {
-    data: Object
+    col: Object,
+    row: Number
   }
 };
 </script>

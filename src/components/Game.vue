@@ -58,7 +58,7 @@ export default {
         }
       }
       console.log(map.length, y, map[y]);
-      this.$set(map[y], x, room);
+      this.$set(map[map.length - 1 - y], x, room);
 
       if (!graph[room_id]) {
         this.$set(graph, room_id, {

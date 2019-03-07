@@ -5,7 +5,7 @@
         <Cell :data="col"/>
       </div>
     </div>
-    <div>{{ graph }}</div>
+    <!-- <div>{{ graph }}</div> -->
   </div>
 </template>
 

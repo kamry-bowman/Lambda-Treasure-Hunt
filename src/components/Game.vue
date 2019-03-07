@@ -13,6 +13,13 @@ import Map from "./Map.vue";
 import Clock from "./Clock.vue";
 import { getMoves } from "../utils";
 
+const invertDirs = {
+  n: "s",
+  s: "n",
+  e: "w",
+  w: "e"
+};
+
 function getCoords(coords) {
   const [_, x, y] = coords.match(/\((\d*),(\d*)\)/);
   return [Number(x), Number(y)];
@@ -40,11 +47,11 @@ export default {
     msg: String
   },
   methods: {
-    updateGame(data) {
+    updateGame(data, trace) {
       const { cooldown, ...room } = data;
       const { coordinates, room_id, exits } = room;
       const { map, graph, player } = this;
-      console.dir(room);
+      console.dir(data);
       // update map
       const [x, y] = getCoords(coordinates);
       player.pos = [x, y];
@@ -52,7 +59,7 @@ export default {
       const width = map[0] && map[0].length > x + 1 ? map[0].length : x + 1;
       const height = y + 1;
       while (map.length < height) {
-        map.push(Array.from({ length: width }).fill(null));
+        map.unshift(Array.from({ length: width }).fill(null));
       }
       if (map[0].length < width) {
         for (let row of map) {
@@ -70,16 +77,31 @@ export default {
           exits.reduce((acc, dir) => ({ ...acc, [dir]: "?" }), {})
         );
       }
+      // update graph with direction info for room moved out of and moved into
+      if (trace) {
+        const { dir, from } = trace;
+        if (graph[from][dir] === "?") {
+          this.$set(graph[from], dir, room_id);
+        }
+        if (graph[room_id][invertDirs[dir]] === "?") {
+          this.$set(graph[room_id], invertDirs[dir], from);
+        }
+      }
 
       // update cooldown
       this.nextMoveTime = Date.now() + cooldown * 1000;
     },
     async move({ dir, room }) {
       try {
-        const { data } = await axios.post("/move/", { direction: dir });
-        console.dir(data);
-        this.updateGame(data);
+        const from = this.player.room.room_id;
+        const next_room_id = room === "?" ? undefined : String(room);
+        const { data } = await axios.post("/move/", {
+          direction: dir,
+          next_room_id
+        });
+        this.updateGame(data, { dir, from });
       } catch (err) {
+        // if error, check for cooldown update
         if (err.response.data && err.response.data.cooldown) {
           this.nextMoveTime = Date.now() + err.response.data.cooldown * 1000;
         }
@@ -118,6 +140,7 @@ export default {
       if (!this.nextMoves.length) {
         const newMoves = getMoves(this.graph, this.player.room.room_id);
         const nextMove = newMoves.pop();
+        console.log(nextMove);
         this.move(nextMove);
         this.nextMoves = [...this.nextMoves, ...newMoves];
       } else {

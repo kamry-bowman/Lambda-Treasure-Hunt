@@ -45,25 +45,25 @@ export default {
 
 <style lang="scss" scoped>
 div {
-  width: 10px;
-  height: 10px;
+  height: 100%;
+  flex: 1 10px;
   background-color: gray;
 
   &.explored {
     background-color: red;
 
     &.nWall {
-      border-top: 1px solid white;
+      border-top: 2px solid white;
     }
 
     &.sWall {
-      border-bottom: 1px solid white;
+      border-bottom: 2px solid white;
     }
     &.wWall {
-      border-left: 1px solid white;
+      border-left: 2px solid white;
     }
     &.eWall {
-      border-right: 1px solid white;
+      border-right: 2px solid white;
     }
 
     &.center {

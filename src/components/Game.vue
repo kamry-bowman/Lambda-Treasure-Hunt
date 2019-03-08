@@ -1,8 +1,8 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>{{ player.room }}</p>
+  <div class="game">
+    <h1>Good Game</h1>
     <Map :map="map" :graph="graph" :player="player"/>
+    <Info :player="player" />
     <Clock :alarm="nextMoveTime" :autoMove="autoMove" :initialized="initialized"/>
   </div>
 </template>
@@ -11,6 +11,7 @@
 import axios from "axios";
 import Map from "./Map.vue";
 import Clock from "./Clock.vue";
+import Info from './Info.vue';
 import { getMoves } from "../utils";
 
 const invertDirs = {
@@ -27,7 +28,7 @@ function getCoords(coords) {
 
 export default {
   name: "Game",
-  components: { Map, Clock },
+  components: { Map, Clock, Info },
   data() {
     return {
       initialized: false,
@@ -162,6 +163,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 h3 {
   margin: 40px 0 0;
 }

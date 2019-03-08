@@ -79,12 +79,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#map {
+  width: 320px;
+  height: 320px;
+}
 div.grid {
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: 100%;
 }
 div.row {
+  flex-grow: 1;
   display: flex;
 }
 </style>

@@ -2,7 +2,7 @@
   <div class="game">
     <h1>Good Game</h1>
     <Map :map="map" :graph="graph" :player="player"/>
-    <Info :player="player" />
+    <Info :room="player.room" />
     <Clock :alarm="nextMoveTime" :autoMove="autoMove" :initialized="initialized"/>
   </div>
 </template>

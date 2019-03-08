@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h2>{{ player.room.title }} </h2>
-    <p> {{ player.room.description }} </p>
+    <h2>{{ room.title }} </h2>
+    <p> {{ room.description }} </p>
   </div>
 </template>
 
@@ -11,7 +11,7 @@ export default {
   name: "Info",
   
   props: {
-    player: Object
+    room: Object
   }
 };
 </script>

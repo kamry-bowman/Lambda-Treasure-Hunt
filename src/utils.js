@@ -12,46 +12,28 @@ function getMoves(graph, room_id) {
     const [dir, room] = options[0];
     return [{ dir, room }];
   } else {
-    // implement BFS here
-    // const options = Object.entries(graph[room_id]);
-    // console.log(options);
-    // const slicer = Math.floor(Math.random() * options.length);
-    // console.log(slicer);
-    // const resp = options[Math.floor(slicer)];
-    // console.log(resp);
-    // return [{ dir: resp[0], room: resp[1] }];
-
-    const path = findNearestUnvisited(graph, room_id);
-    return path;
+    return findNearestUnvisited(graph, room_id);
   }
 }
 
-const invertDirs = {
-  n: "s",
-  s: "n",
-  w: "e",
-  e: "w"
-};
-
 function findNearestUnvisited(graph, room) {
-  console.log(graph);
-  console.log(room);
   let currentId = room;
   const q = [];
   const visited = {};
-  Object.entries(graph[room]).forEach(([dir, room]) => {
+  Object.keys(graph[currentId]).forEach(dir => {
     q.unshift({ room: currentId, dir });
   });
   let found = false;
   while (!found && q.length) {
     // grab off right of queue
-    const { room, dir } = q.pop();
-    console.log(room, dir);
-    currentId = graph[room][dir];
+    const { room: lastId, dir } = q.pop();
+    currentId = graph[lastId][dir];
     if (!visited[currentId]) {
-      visited[currentId] = [{ room: currentId, dir }, ...(visited[room] || [])];
+      visited[currentId] = [
+        { room: currentId, dir },
+        ...(visited[lastId] || [])
+      ];
       const options = graph[currentId];
-      console.log(options, currentId, graph);
       for (let opt of Object.keys(options)) {
         if (options[opt] === "?") {
           found = opt;

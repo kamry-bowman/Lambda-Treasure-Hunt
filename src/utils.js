@@ -2,6 +2,7 @@ function getMoves(graph, room_id) {
   if (!graph[room_id]) {
     return [];
   }
+
   console.log(graph[room_id]);
   const options = Object.entries(graph[room_id]).filter(
     ([dir, room]) => room === "?"
@@ -12,14 +13,16 @@ function getMoves(graph, room_id) {
     return [{ dir, room }];
   } else {
     // implement BFS here
-    const options = Object.entries(graph[room_id]);
-    console.log(options);
-    const slicer = Math.floor(Math.random() * options.length);
-    console.log(slicer);
-    const resp = options[Math.floor(slicer)];
-    console.log(resp);
+    // const options = Object.entries(graph[room_id]);
+    // console.log(options);
+    // const slicer = Math.floor(Math.random() * options.length);
+    // console.log(slicer);
+    // const resp = options[Math.floor(slicer)];
+    // console.log(resp);
+    // return [{ dir: resp[0], room: resp[1] }];
 
-    return [{ dir: resp[0], room: resp[1] }];
+    const path = findNearestUnvisited(graph, room_id);
+    return path;
   }
 }
 
@@ -31,22 +34,26 @@ const invertDirs = {
 };
 
 function findNearestUnvisited(graph, room) {
+  console.log(graph);
+  console.log(room);
+  let currentId = room;
   const q = [];
   const visited = {};
   Object.entries(graph[room]).forEach(([dir, room]) => {
-    q.unshift([{ room, dir }]);
+    q.unshift({ room: currentId, dir });
   });
-  const found = false;
-  let currentId = room;
+  let found = false;
   while (!found && q.length) {
     // grab off right of queue
     const { room, dir } = q.pop();
+    console.log(room, dir);
     currentId = graph[room][dir];
     if (!visited[currentId]) {
-      visited[currentId] = [...visited[room], { room, dir }];
+      visited[currentId] = [{ room: currentId, dir }, ...(visited[room] || [])];
       const options = graph[currentId];
-      for (opt of Object.keys(current)) {
-        if (current[opt] === "?") {
+      console.log(options, currentId, graph);
+      for (let opt of Object.keys(options)) {
+        if (options[opt] === "?") {
           found = opt;
           break;
         } else {
@@ -61,5 +68,11 @@ function findNearestUnvisited(graph, room) {
     return false;
   }
 }
+
+// const exampleGraph = JSON.parse(
+//   '{"0":{"n":10,"s":2,"e":"?","w":"?"},"2":{"n":0,"s":6,"e":"?"},"6":{"n":2,"w":7},"7":{"n":8,"e":6,"w":"?"},"8":{"s":7,"w":16},"10":{"n":19,"s":0,"w":"?"},"16":{"n":58,"e":8,"w":"?"},"19":{"n":20,"s":10,"w":"?"},"20":{"n":63,"s":19,"e":"?","w":"?"},"58":{"s":16,"w":65},"63":{"n":72,"s":20,"w":"?"},"65":{"n":74,"e":58,"w":"?"},"72":{"s":63,"w":76},"74":{"n":87,"s":65,"w":161},"76":{"n":83,"e":72,"w":"?"},"83":{"s":76,"e":"?","w":125},"87":{"s":74},"125":{"n":165,"e":83,"w":"?"},"161":{"e":74},"165":{"n":203,"s":125,"w":"?"},"203":{"n":268,"s":165,"e":"?"},"268":{"s":203,"e":"?","w":312},"312":{"n":328,"e":268},"328":{"n":332,"s":312,"e":"?","w":"?"},"332":{"n":350,"s":328},"350":{"n":436,"s":332,"e":404},"404":{"n":481,"w":350},"436":{"s":350},"481":{"s":404}}'
+// );
+// const room = 161;
+// console.dir(findNearestUnvisited(exampleGraph, room));
 
 export { getMoves };

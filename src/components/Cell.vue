@@ -1,7 +1,7 @@
 <template>
   <div
     v-bind:class="{
-      explored: cell.room_id,
+      explored: explored,
       center: here,
       nWall: exits.n,
       sWall: exits.s,
@@ -12,9 +12,13 @@
 </template>
 
 <script>
+
 export default {
   name: "Cell",
   computed: {
+    explored: function() {
+      return typeof this.cell.room_id === 'number';
+    },
     here: function() {
       return this.col === this.center[0] && this.row === this.center[1];
     },
